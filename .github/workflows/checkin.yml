@@ -1,0 +1,19 @@
+name: WorkBuddy 每日签到
+
+on:
+  schedule:
+    # UTC 23:50 == 北京时间次日 07:50，在本机任务(08:05)之前先跑，双保险
+    - cron: "50 23 * * *"
+  workflow_dispatch:
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: 用 refreshToken 换 accessToken 并签到
+        env:
+          WB_REFRESH_TOKEN: ${{ secrets.WB_REFRESH_TOKEN }}
+        run: |
+          python3 -u wb_cloud_checkin.py
