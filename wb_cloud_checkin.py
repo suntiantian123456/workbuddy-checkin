@@ -91,6 +91,13 @@ def main():
         log("   需要在本机重新导出并更新仓库 Secret（WB_REFRESH_TOKEN）")
         return 1
     log("✅ 令牌刷新成功")
+    if new_rt and new_rt != rt:
+        # 把轮换后的新 RT 落盘，由 sync_secret.py 写回仓库 Secret
+        try:
+            open("new_rt.txt", "w", encoding="utf-8").write(new_rt)
+            log("已写出新 refreshToken 待回写 Secret")
+        except Exception as e:
+            log("写 new_rt.txt 失败: %s" % e)
     h = {"Authorization": "Bearer " + at}
 
     code, body = request("POST", BASE + "/v2/billing/meter/checkin-activity-status", h, {})

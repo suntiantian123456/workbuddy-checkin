@@ -6,14 +6,23 @@ on:
     - cron: "50 23 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   checkin:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: 安装依赖
+        run: pip install --quiet pynacl
       - name: 用 refreshToken 换 accessToken 并签到
         env:
           WB_REFRESH_TOKEN: ${{ secrets.WB_REFRESH_TOKEN }}
-        run: |
-          python3 -u wb_cloud_checkin.py
+        run: python3 -u wb_cloud_checkin.py
+      - name: 回写轮换后的 refreshToken 到仓库 Secret
+        if: success() && hashFiles('new_rt.txt') != ''
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: python3 -u sync_secret.py "${{ github.repository }}" new_rt.txt
