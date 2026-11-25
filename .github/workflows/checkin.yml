@@ -2,8 +2,8 @@ name: WorkBuddy 每日签到
 
 on:
   schedule:
-    # UTC 23:50 == 北京时间次日 07:50，在本机任务(08:05)之前先跑，双保险
-    - cron: "50 23 * * *"
+    # 临时：每 7 分钟一次，用于验证 schedule 是否真的触发（验证后会改回每日）
+    - cron: "*/7 * * * *"
   workflow_dispatch:
 
 permissions:
